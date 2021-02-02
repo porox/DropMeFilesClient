@@ -1,0 +1,7 @@
+vendor
+report
+test.php
+composer.phar
+phpunit.xml
+.idea/*
+.php_cs.cache
