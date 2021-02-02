@@ -7,16 +7,16 @@ namespace Porox\Dropmefiles\Client;
  */
 class CreateFileConfig
 {
-    protected bool $needPassword = false;
+    protected $needPassword = false;
 
     /**
      * @var \SplFileInfo []
      */
-    protected array $files = [];
+    protected $files = [];
 
-    protected int $size = 0;
+    protected $size = 0;
 
-    protected int $period = PeriodTypes::DAYS_3;
+    protected $period = PeriodTypes::DAYS_3;
 
     public function isNeedPassword(): bool
     {

@@ -7,15 +7,30 @@ namespace Porox\Dropmefiles\Client;
  */
 class Response implements ResponseInterface
 {
-    protected bool $success = false;
+    /**
+     * @var bool
+     */
+    protected $success = false;
 
-    protected string $url = '';
+    /**
+     * @var string
+     */
+    protected $url = '';
 
-    protected ?string $password = null;
+    /**
+     * @var string|null
+     */
+    protected $password = null;
 
-    protected string $errorText = '';
+    /**
+     * @var string
+     */
+    protected $errorText = '';
 
-    protected ?int $errorCode = null;
+    /**
+     * @var int|null
+     */
+    protected $errorCode = null;
 
     public function getUrl(): string
     {

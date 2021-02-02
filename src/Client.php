@@ -4,10 +4,19 @@ namespace Porox\Dropmefiles\Client;
 
 use Porox\Dropmefiles\Client\Exception\DropmefilesException;
 
+/**
+ * Class Client.
+ */
 class Client implements DropmefilesClientInterface
 {
-    protected DropmefilesAPIInteface $api;
+    /**
+     * @var DropmefilesAPIInteface
+     */
+    protected $api;
 
+    /**
+     * Client constructor.
+     */
     public function __construct(DropmefilesAPIInteface $api)
     {
         $this->api = $api;

@@ -2,11 +2,11 @@
 
 namespace Porox\Dropmefiles\Client;
 
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\RequestOptions;
 use Porox\Dropmefiles\Client\Dto\DropmefilesDto;
 use Porox\Dropmefiles\Client\Dto\DropmefilesFileDto;
 use Porox\Dropmefiles\Client\Exception\DropmefilesException;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\RequestOptions;
 
 /**
  * Class DropmefilesAPI.
@@ -17,7 +17,7 @@ class DropmefilesAPI implements DropmefilesAPIInteface
 
     const CHUNK_SIZE = 4194304;
 
-    protected ClientInterface $httpClient;
+    protected $httpClient;
 
     /**
      * DropmefilesAPI constructor.

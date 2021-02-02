@@ -2,13 +2,25 @@
 
 namespace Porox\Dropmefiles\Client\Dto;
 
+/**
+ * Class DropmefilesDto.
+ */
 class DropmefilesDto
 {
-    protected string $uid;
+    /**
+     * @var string
+     */
+    protected $uid;
 
-    protected string $password;
+    /**
+     * @var string
+     */
+    protected $password;
 
-    protected array $files = [];
+    /**
+     * @var array
+     */
+    protected $files = [];
 
     public function getUid(): string
     {

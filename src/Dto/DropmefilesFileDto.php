@@ -2,26 +2,71 @@
 
 namespace Porox\Dropmefiles\Client\Dto;
 
+/**
+ * Class DropmefilesFileDto.
+ */
 class DropmefilesFileDto implements \JsonSerializable
 {
-    protected string $id;
+    /**
+     * @var string
+     */
+    protected $id;
 
-    protected string $name;
+    /**
+     * @var string
+     */
+    protected $name;
 
-    protected string $type = 'application\zip';
+    /**
+     * @var string
+     */
+    protected $type = 'application\zip';
 
-    protected string  $relativePath = '';
+    /**
+     * @var string
+     */
+    protected $relativePath = '';
 
-    protected int  $size;
-    protected int  $origSize;
-    protected int  $loaded;
-    protected int $percent = 100;
-    protected int $status = 5;
-    protected string  $lastModifiedDate = '2021-01-28T14:18:14.996Z';
-    protected int  $completeTimestamp;
-    protected string $dir;
-    protected int $logstatus = 2;
+    /**
+     * @var int
+     */
+    protected $size;
+    /**
+     * @var int
+     */
+    protected $origSize;
+    /**
+     * @var int
+     */
+    protected $loaded;
+    /**
+     * @var int
+     */
+    protected $percent = 100;
+    /**
+     * @var int
+     */
+    protected $status = 5;
+    /**
+     * @var string
+     */
+    protected $lastModifiedDate = '2021-01-28T14:18:14.996Z';
+    /**
+     * @var int
+     */
+    protected $completeTimestamp;
+    /**
+     * @var string
+     */
+    protected $dir;
+    /**
+     * @var int
+     */
+    protected $logstatus = 2;
 
+    /**
+     * DropmefilesFileDto constructor.
+     */
     public function __construct(string $id, string $name, int $size, string $dir)
     {
         $this->id = $id;
@@ -163,6 +208,9 @@ class DropmefilesFileDto implements \JsonSerializable
         $this->lastModifiedDate = $lastModifiedDate;
     }
 
+    /**
+     * @return array|mixed
+     */
     public function jsonSerialize()
     {
         return get_object_vars($this);
