@@ -3,10 +3,8 @@
 namespace Porox\Dropmefiles\Client;
 
 use Porox\Dropmefiles\Client\Exception\DropmefilesException;
+use Throwable;
 
-/**
- * Class Client.
- */
 class Client implements DropmefilesClientInterface
 {
     /**
@@ -14,9 +12,6 @@ class Client implements DropmefilesClientInterface
      */
     protected $api;
 
-    /**
-     * Client constructor.
-     */
     public function __construct(DropmefilesAPIInteface $api)
     {
         $this->api = $api;
@@ -32,17 +27,20 @@ class Client implements DropmefilesClientInterface
                 $this->api->uploadFile($file, $dropmeFilesDto);
                 $this->api->save($config->getPeriod(), $dropmeFilesDto);
             }
+            if (null === $dropmeFilesDto) {
+                throw new DropmefilesException('No Files.');
+            }
             $resp->setUrl($this->api->getUrl($dropmeFilesDto));
             if ($config->isNeedPassword()) {
                 $this->api->password($dropmeFilesDto);
                 $resp->setPassword($dropmeFilesDto->getPassword());
             }
             $resp->setSuccess(true);
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $resp->setSuccess(false);
             $resp->setErrorText($exception->getMessage());
             if ($exception instanceof DropmefilesException) {
-                $resp->setErrorCode($exception->getCode());
+                $resp->setErrorCode((int) $exception->getCode());
             }
         } finally {
             return $resp;

@@ -2,9 +2,6 @@
 
 namespace Porox\Dropmefiles\Client;
 
-/**
- * Interface ResponseInterface.
- */
 interface ResponseInterface
 {
     public function getUrl(): string;
