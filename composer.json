@@ -1,6 +1,7 @@
 {
   "name": "porox/dropmefiles-client",
   "description": "PHP client dropmefiles.com",
+  "license": "MIT",
   "authors": [
     {
       "name": "Yury Dombrovsky",
