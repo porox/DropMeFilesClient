@@ -2,9 +2,9 @@
 
 namespace Porox\Dropmefiles\Client\Dto;
 
+use function get_object_vars;
 use JsonSerializable;
 use function time;
-use function get_object_vars;
 
 class DropmefilesFileDto implements JsonSerializable
 {

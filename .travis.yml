@@ -11,6 +11,6 @@ before_script:
   - composer install
 
 script:
-  - ./vendor/bin/php-cs-fixer fix --diff --dry-run -v ./src ./tests
+  - ./vendor/bin/php-cs-fixer fix --diff --dry-run -v .
   - ./vendor/bin/psalm --show-info=false --no-progress
   - ./vendor/bin/phpunit

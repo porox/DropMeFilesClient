@@ -7,12 +7,11 @@ use PHPUnit\Framework\TestCase;
 use Porox\Dropmefiles\Client\DropmefilesClientFactory;
 use Porox\Dropmefiles\Client\DropmefilesClientInterface;
 
-
 class DropmefilesClientFactoryTest extends TestCase
 {
     public function testCreate(): void
     {
         $stub = $this->createMock(ClientInterface::class);
-        $this->assertInstanceOf(DropmefilesClientInterface::class, DropmefilesClientFactory::create($stub));
+        self::assertInstanceOf(DropmefilesClientInterface::class, DropmefilesClientFactory::create($stub));
     }
 }

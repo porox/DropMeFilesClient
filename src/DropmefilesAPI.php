@@ -2,21 +2,21 @@
 
 namespace Porox\Dropmefiles\Client;
 
+use function array_merge;
+use function fclose;
+use function fopen;
+use function fread;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
+use function intdiv;
+use function json_decode;
+use function md5;
 use Porox\Dropmefiles\Client\Dto\DropmefilesDto;
 use Porox\Dropmefiles\Client\Dto\DropmefilesFileDto;
 use Porox\Dropmefiles\Client\Exception\DropmefilesException;
-use GuzzleHttp\Exception\GuzzleException;
 use SplFileInfo;
-use function json_decode;
-use function array_merge;
-use function fopen;
-use function intdiv;
 use function urlencode;
-use function fread;
-use function fclose;
-use function md5;
 
 class DropmefilesAPI implements DropmefilesAPIInteface
 {
