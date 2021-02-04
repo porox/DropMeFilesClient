@@ -2,9 +2,6 @@
 
 namespace Porox\Dropmefiles\Client\Dto;
 
-/**
- * Class DropmefilesDto.
- */
 class DropmefilesDto
 {
     /**
@@ -15,7 +12,7 @@ class DropmefilesDto
     /**
      * @var string
      */
-    protected $password;
+    protected $password = '';
 
     /**
      * @var array
@@ -32,10 +29,7 @@ class DropmefilesDto
         $this->uid = $uid;
     }
 
-    /**
-     * @return string
-     */
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->password;
     }

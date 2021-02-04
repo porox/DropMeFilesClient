@@ -2,10 +2,11 @@
 
 namespace Porox\Dropmefiles\Client\Dto;
 
-/**
- * Class DropmefilesFileDto.
- */
-class DropmefilesFileDto implements \JsonSerializable
+use function get_object_vars;
+use JsonSerializable;
+use function time;
+
+class DropmefilesFileDto implements JsonSerializable
 {
     /**
      * @var string
@@ -64,9 +65,6 @@ class DropmefilesFileDto implements \JsonSerializable
      */
     protected $logstatus = 2;
 
-    /**
-     * DropmefilesFileDto constructor.
-     */
     public function __construct(string $id, string $name, int $size, string $dir)
     {
         $this->id = $id;
@@ -208,10 +206,7 @@ class DropmefilesFileDto implements \JsonSerializable
         $this->lastModifiedDate = $lastModifiedDate;
     }
 
-    /**
-     * @return array|mixed
-     */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return get_object_vars($this);
     }

@@ -2,6 +2,8 @@
 
 namespace Porox\Dropmefiles\Client\Exception;
 
-class DropmefilesException extends \Exception
+use Exception;
+
+class DropmefilesException extends Exception
 {
 }
