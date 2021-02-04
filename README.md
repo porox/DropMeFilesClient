@@ -2,7 +2,7 @@
 [![Latest Stable Version](https://img.shields.io/packagist/v/porox/dropmefiles-client.svg)](https://packagist.org/packages/porox/dropmefiles-client)
 [![Total Downloads](https://img.shields.io/packagist/dt/porox/dropmefiles-client.svg)](https://packagist.org/packages/porox/dropmefiles-client)
 [![Downloads Month](https://img.shields.io/packagist/dm/porox/dropmefiles-client.svg)](https://packagist.org/packages/porox/dropmefiles-client)
-[![Minimum PHP Version](http://img.shields.io/badge/php-%3E%3D7.3-8892BF.svg)](https://php.net/)
+[![Minimum PHP Version](http://img.shields.io/badge/php-%3E%3D7.2-8892BF.svg)](https://php.net/)
 
 #  Sample usage  
 ```php
