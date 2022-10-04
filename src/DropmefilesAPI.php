@@ -220,7 +220,7 @@ class DropmefilesAPI implements DropmefilesAPIInteface
         try {
             $response = $this->httpClient->request(
                 'POST',
-                $this::HOST.'/s3/uploadch?name='.urlencode($fileInfo->getFilename()).'&chunk=' . $chunk .
+                $this::HOST . '/s3/uploadch?name=' . urlencode($fileInfo->getFilename()) . '&chunk=' . $chunk .
                 '&chunks=' . $chunks . '&updir=' . $uid,
                 [
                     RequestOptions::HEADERS => array_merge($this->getBaseHeaders(), [
