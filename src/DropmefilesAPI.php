@@ -2,29 +2,31 @@
 
 namespace Porox\Dropmefiles\Client;
 
+use function array_merge;
+use function fclose;
+use function fopen;
+use function fread;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
+use function intdiv;
+use function json_decode;
+use function md5;
 use Porox\Dropmefiles\Client\Dto\DropmefilesDto;
 use Porox\Dropmefiles\Client\Dto\DropmefilesFileDto;
 use Porox\Dropmefiles\Client\Exception\DropmefilesException;
+use SplFileInfo;
+use function urlencode;
 
-/**
- * Class DropmefilesAPI.
- */
 class DropmefilesAPI implements DropmefilesAPIInteface
 {
-    const HOST = 'https://dropmefiles.com';
-
-    const CHUNK_SIZE = 4194304;
+    private const HOST = 'https://dropmefiles.com';
+    private const CHUNK_SIZE = 4194304;
 
     protected $attempts = 10;
 
     protected $httpClient;
 
-    /**
-     * DropmefilesAPI constructor.
-     */
     public function __construct(ClientInterface $httpClient)
     {
         $this->httpClient = $httpClient;
@@ -32,7 +34,7 @@ class DropmefilesAPI implements DropmefilesAPIInteface
 
     /**
      * @throws DropmefilesException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function create(int $size, int $period = PeriodTypes::DAYS_3, ?DropmefilesDto $dto = null): DropmefilesDto
     {
@@ -55,14 +57,14 @@ class DropmefilesAPI implements DropmefilesAPIInteface
         } else {
             $dto = new DropmefilesDto();
         }
-        $response = $this->httpClient->request('POST', $this::HOST.'/s3/upload/create', [
+        $response = $this->httpClient->request('POST', self::HOST . '/s3/upload/create', [
             RequestOptions::HEADERS => array_merge($this->getBaseHeaders(), [
                 'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8',
             ]),
             RequestOptions::FORM_PARAMS => $params,
         ]);
 
-        $res = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+        $res = json_decode($response->getBody()->getContents(), true);
 
         $this->processResponse($res);
 
@@ -73,11 +75,11 @@ class DropmefilesAPI implements DropmefilesAPIInteface
 
     /**
      * @throws DropmefilesException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function password(DropmefilesDto $dto): bool
     {
-        $response = $this->httpClient->request('POST', $this::HOST.'/s3/upload/password', [
+        $response = $this->httpClient->request('POST', self::HOST . '/s3/upload/password', [
             RequestOptions::HEADERS => array_merge($this->getBaseHeaders(), [
                 'Content-Type' => 'application/x-www-form-urlencoded',
             ]),
@@ -88,7 +90,7 @@ class DropmefilesAPI implements DropmefilesAPIInteface
             ],
         ]);
 
-        $res = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+        $res = json_decode($response->getBody()->getContents(), true);
 
         $dto->setPassword($res['password'] ?? '');
         $this->processResponse($res);
@@ -98,14 +100,18 @@ class DropmefilesAPI implements DropmefilesAPIInteface
 
     /**
      * @throws DropmefilesException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
-    public function uploadFile(\SplFileInfo $fileInfo, DropmefilesDto $dto): bool
+    public function uploadFile(SplFileInfo $fileInfo, DropmefilesDto $dto): bool
     {
         $res = [];
-        $fileDto = new DropmefilesFileDto($this->getFileId($fileInfo->getFilename()), $fileInfo->getFilename(),
-            $fileInfo->getSize(), $dto->getUid());
-        $fileNameTech = $dto->getUid().'_'.$fileDto->getId();
+        $fileDto = new DropmefilesFileDto(
+            $this->getFileId($fileInfo->getFilename()),
+            $fileInfo->getFilename(),
+            $fileInfo->getSize(),
+            $dto->getUid()
+        );
+        $fileNameTech = $dto->getUid() . '_' . $fileDto->getId();
         $fileStream = fopen($fileInfo->getRealPath(), 'r');
         $chunks = intdiv($fileInfo->getSize(), self::CHUNK_SIZE);
         $chunks = ($fileInfo->getSize() % self::CHUNK_SIZE > 0) ? $chunks + 1 : $chunks;
@@ -128,11 +134,11 @@ class DropmefilesAPI implements DropmefilesAPIInteface
 
     /**
      * @throws DropmefilesException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function save(int $period, DropmefilesDto $dto): bool
     {
-        $response = $this->httpClient->request('POST', $this::HOST.'/s3/upload/save', [
+        $response = $this->httpClient->request('POST', self::HOST . '/s3/upload/save', [
             RequestOptions::HEADERS => array_merge($this->getBaseHeaders(), [
                 'Content-Type' => 'application/x-www-form-urlencoded',
             ]),
@@ -149,7 +155,7 @@ class DropmefilesAPI implements DropmefilesAPIInteface
             ],
         ]);
 
-        $res = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+        $res = json_decode($response->getBody()->getContents(), true);
         $this->processResponse($res);
 
         return ($res['result'] ?? null) === 'Saved';
@@ -157,7 +163,7 @@ class DropmefilesAPI implements DropmefilesAPIInteface
 
     public function getUrl(DropmefilesDto $dto): string
     {
-        return self::HOST.'/'.$dto->getUid();
+        return self::HOST . '/' . $dto->getUid();
     }
 
     /**
@@ -177,7 +183,7 @@ class DropmefilesAPI implements DropmefilesAPIInteface
 
     private function getFileId(string $fileName): string
     {
-        return 'o_'.md5($fileName.time());
+        return 'o_' . md5($fileName . time());
     }
 
     /**
@@ -188,7 +194,7 @@ class DropmefilesAPI implements DropmefilesAPIInteface
     private function processResponse($res): void
     {
         if (isset($res['error'])) {
-            throw new DropmefilesException('Dropmefiles error code: '.($res['error']['code'] ?? '0').' message: '.($res['error']['message'] ?? ''), ($res['error']['code'] ?? '0'));
+            throw new DropmefilesException('Dropmefiles error code: ' . ($res['error']['code'] ?? 0) . ' message: ' . ($res['error']['message'] ?? ''), ($res['error']['code'] ?? 0));
         }
     }
 
@@ -218,7 +224,7 @@ class DropmefilesAPI implements DropmefilesAPIInteface
                     RequestOptions::BODY => $content,
                 ]);
             if (200 === $response->getStatusCode()) {
-                $res = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+                $res = json_decode($response->getBody()->getContents(), true);
                 $this->processResponse($res);
             }
         } catch (GuzzleException | DropmefilesException $exception) {

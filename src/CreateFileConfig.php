@@ -2,15 +2,14 @@
 
 namespace Porox\Dropmefiles\Client;
 
-/**
- * Class CreateFileConfig.
- */
+use SplFileInfo;
+
 class CreateFileConfig
 {
     protected $needPassword = false;
 
     /**
-     * @var \SplFileInfo []
+     * @var SplFileInfo[]
      */
     protected $files = [];
 
@@ -38,14 +37,14 @@ class CreateFileConfig
         $this->period = $period;
     }
 
-    public function addFile(\SplFileInfo $fileInfo): void
+    public function addFile(SplFileInfo $fileInfo): void
     {
         $this->size += $fileInfo->getSize();
         $this->files[] = $fileInfo;
     }
 
     /**
-     * @return \SplFileInfo[]
+     * @return SplFileInfo[]
      */
     public function getFiles(): array
     {
