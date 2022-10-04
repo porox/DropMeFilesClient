@@ -212,17 +212,16 @@ class DropmefilesAPI implements DropmefilesAPIInteface
         int $chunk,
         int $chunkSize,
         int $sendFileSize,
-        \SplFileInfo $fileInfo,
+        SplFileInfo $fileInfo,
         string $fileNameTech,
         string $uid,
         int $attempt = 0
-    ): bool
-    {
+    ): bool {
         try {
             $response = $this->httpClient->request(
                 'POST',
-                $this::HOST.'/s3/uploadch?name='.urlencode($fileInfo->getFilename()).'&chunk='.$chunk.
-                '&chunks='.$chunks.'&updir='.$uid,
+                $this::HOST.'/s3/uploadch?name='.urlencode($fileInfo->getFilename()).'&chunk=' . $chunk .
+                '&chunks=' . $chunks . '&updir=' . $uid,
                 [
                     RequestOptions::HEADERS => array_merge($this->getBaseHeaders(), [
                         'Content-Type' => 'application/octet-stream',
