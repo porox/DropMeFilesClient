@@ -3,6 +3,7 @@
 namespace Porox\Dropmefiles\Client;
 
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
 use Porox\Dropmefiles\Client\Dto\DropmefilesDto;
 use Porox\Dropmefiles\Client\Dto\DropmefilesFileDto;
@@ -16,6 +17,8 @@ class DropmefilesAPI implements DropmefilesAPIInteface
     const HOST = 'https://dropmefiles.com';
 
     const CHUNK_SIZE = 4194304;
+
+    protected $attempts = 10;
 
     protected $httpClient;
 
@@ -109,26 +112,12 @@ class DropmefilesAPI implements DropmefilesAPIInteface
         $chunkSize = 1 === $chunks ? $fileInfo->getSize() : self::CHUNK_SIZE;
         $sendFileSize = 0;
         for ($chunk = 0; $chunk < $chunks; ++$chunk) {
-            $response = $this->httpClient->request('POST',
-                $this::HOST.'/s3/uploadch?name='.urlencode($fileInfo->getFilename()).'&chunk='.$chunk.
-                '&chunks='.$chunks.'&updir='.$dto->getUid(), [
-                    RequestOptions::HEADERS => array_merge($this->getBaseHeaders(), [
-                        'Content-Type' => 'application/octet-stream',
-                        'content-disposition' => 'attachment; filename="'.$fileNameTech.'"',
-                        'Content-Length' => $chunkSize,
-                        'session-id' => $fileNameTech,
-                        'content-range' => 'bytes '.$sendFileSize.'-'.(($chunkSize + $sendFileSize) - 1).
-                            '/'.$fileInfo->getSize(),
-                    ]),
-                    RequestOptions::BODY => fread($fileStream, $chunkSize),
-                ]);
+            $content = fread($fileStream, $chunkSize);
+            $this->sendChunk($content,$chunks,$chunk,$chunkSize,$sendFileSize,$fileInfo,$fileNameTech,
+                $dto->getUid());
             $sendFileSize += $chunkSize;
             if (($fileInfo->getSize() - $sendFileSize) < self::CHUNK_SIZE) {
                 $chunkSize = $fileInfo->getSize() - $sendFileSize;
-            }
-            if (200 === $response->getStatusCode()) {
-                $res = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
-                $this->processResponse($res);
             }
         }
         fclose($fileStream);
@@ -201,5 +190,45 @@ class DropmefilesAPI implements DropmefilesAPIInteface
         if (isset($res['error'])) {
             throw new DropmefilesException('Dropmefiles error code: '.($res['error']['code'] ?? '0').' message: '.($res['error']['message'] ?? ''), ($res['error']['code'] ?? '0'));
         }
+    }
+
+    private function sendChunk(
+        string $content,
+        int $chunks,
+        int $chunk,
+        int $chunkSize,
+        int $sendFileSize,
+        \SplFileInfo $fileInfo,
+        string $fileNameTech,
+        string $uid,
+        int $attempt = 0): bool
+    {
+        try {
+            $response = $this->httpClient->request('POST',
+                $this::HOST.'/s3/uploadch?name='.urlencode($fileInfo->getFilename()).'&chunk='.$chunk.
+                '&chunks='.$chunks.'&updir='.$uid, [
+                    RequestOptions::HEADERS => array_merge($this->getBaseHeaders(), [
+                        'Content-Type' => 'application/octet-stream',
+                        'content-disposition' => 'attachment; filename="'.$fileNameTech.'"',
+                        'Content-Length' => $chunkSize,
+                        'session-id' => $fileNameTech,
+                        'content-range' => 'bytes '.$sendFileSize.'-'.(($chunkSize + $sendFileSize) - 1).
+                            '/'.$fileInfo->getSize(),
+                    ]),
+                    RequestOptions::BODY => $content,
+                ]);
+            if (200 === $response->getStatusCode()) {
+                $res = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+                $this->processResponse($res);
+            }
+        } catch (GuzzleException | DropmefilesException $exception) {
+            if ($this->attempts > $attempt) {
+                return $this->sendChunk($content,$chunks,$chunk,$chunkSize,$sendFileSize,$fileInfo,$fileNameTech,$uid,
+                    $attempt + 1);
+            }
+            throw $exception;
+        }
+
+        return true;
     }
 }
