@@ -57,7 +57,7 @@ class DropmefilesAPI implements DropmefilesAPIInteface
         } else {
             $dto = new DropmefilesDto();
         }
-        $response = $this->httpClient->request('POST', self::HOST . '/s3/upload/create', [
+        $response = $this->httpClient->request('POST', self::HOST . '/s5/upload/create', [
             RequestOptions::HEADERS => array_merge($this->getBaseHeaders(), [
                 'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8',
             ]),
@@ -79,7 +79,7 @@ class DropmefilesAPI implements DropmefilesAPIInteface
      */
     public function password(DropmefilesDto $dto): bool
     {
-        $response = $this->httpClient->request('POST', self::HOST . '/s3/upload/password', [
+        $response = $this->httpClient->request('POST', self::HOST . '/s5/upload/password', [
             RequestOptions::HEADERS => array_merge($this->getBaseHeaders(), [
                 'Content-Type' => 'application/x-www-form-urlencoded',
             ]),
@@ -102,7 +102,7 @@ class DropmefilesAPI implements DropmefilesAPIInteface
      * @throws DropmefilesException
      * @throws GuzzleException
      */
-    public function uploadFile(SplFileInfo $fileInfo, DropmefilesDto $dto): bool
+    public function uploadFile(SplFileInfo $fileInfo, DropmefilesDto $dto, ?callable $callback): bool
     {
         $res = [];
         $fileDto = new DropmefilesFileDto(
@@ -118,6 +118,9 @@ class DropmefilesAPI implements DropmefilesAPIInteface
         $chunkSize = 1 === $chunks ? $fileInfo->getSize() : self::CHUNK_SIZE;
         $sendFileSize = 0;
         for ($chunk = 0; $chunk < $chunks; ++$chunk) {
+            if ($callback !== null) {
+                $callback(['chunks'=> $chunks,'chunk' => $chunk]);
+            }
             $content = fread($fileStream, $chunkSize);
             $this->sendChunk(
                 $content,
@@ -146,7 +149,7 @@ class DropmefilesAPI implements DropmefilesAPIInteface
      */
     public function save(int $period, DropmefilesDto $dto): bool
     {
-        $response = $this->httpClient->request('POST', self::HOST . '/s3/upload/save', [
+        $response = $this->httpClient->request('POST', self::HOST . '/s5/upload/save', [
             RequestOptions::HEADERS => array_merge($this->getBaseHeaders(), [
                 'Content-Type' => 'application/x-www-form-urlencoded',
             ]),
@@ -220,7 +223,7 @@ class DropmefilesAPI implements DropmefilesAPIInteface
         try {
             $response = $this->httpClient->request(
                 'POST',
-                $this::HOST . '/s3/uploadch?name=' . urlencode($fileInfo->getFilename()) . '&chunk=' . $chunk .
+                $this::HOST . '/s5/uploadrmbl?name=' . urlencode($fileInfo->getFilename()) . '&chunk=' . $chunk .
                 '&chunks=' . $chunks . '&updir=' . $uid,
                 [
                     RequestOptions::HEADERS => array_merge($this->getBaseHeaders(), [

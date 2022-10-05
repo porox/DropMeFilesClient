@@ -10,7 +10,7 @@ interface DropmefilesAPIInteface
 {
     public function create(int $size, int $period, ?DropmefilesDto $dto = null): DropmefilesDto;
 
-    public function uploadFile(SplFileInfo $fileInfo, DropmefilesDto $dto): bool;
+    public function uploadFile(SplFileInfo $fileInfo, DropmefilesDto $dto, ?callable $callback): bool;
 
     public function save(int $period, DropmefilesDto $dto): bool;
 

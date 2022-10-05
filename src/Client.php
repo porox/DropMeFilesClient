@@ -24,7 +24,7 @@ class Client implements DropmefilesClientInterface
         try {
             foreach ($config->getFiles() as $file) {
                 $dropmeFilesDto = $this->api->create($file->getSize(), $config->getPeriod(), $dropmeFilesDto);
-                $this->api->uploadFile($file, $dropmeFilesDto);
+                $this->api->uploadFile($file, $dropmeFilesDto, $config->getCallback());
                 $this->api->save($config->getPeriod(), $dropmeFilesDto);
             }
             if (null === $dropmeFilesDto) {

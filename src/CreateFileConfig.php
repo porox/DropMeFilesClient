@@ -17,6 +17,11 @@ class CreateFileConfig
 
     protected $period = PeriodTypes::DAYS_3;
 
+    /**
+     * @var ?callable
+     */
+    protected $callback;
+
     public function isNeedPassword(): bool
     {
         return $this->needPassword;
@@ -49,5 +54,15 @@ class CreateFileConfig
     public function getFiles(): array
     {
         return $this->files;
+    }
+
+    public function getCallback(): ?callable
+    {
+        return $this->callback;
+    }
+
+    public function setCallback(?callable $callback): void
+    {
+        $this->callback = $callback;
     }
 }
